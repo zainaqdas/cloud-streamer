@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cloud Video Streamer</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+
+<h2>Personal Video Streamer</h2>
+<input id="url" placeholder="Paste video URL" style="width:400px">
+<button onclick="start()">Play</button>
+
+<br><br>
+<video id="video" width="900" controls></video>
+
+<script>
+async function start() {
+    const url = document.getElementById("url").value;
+
+    const res = await fetch("/start", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({url})
+    });
+
+    const data = await res.json();
+    const video = document.getElementById("video");
+
+    if(Hls.isSupported()){
+        const hls = new Hls();
+        hls.loadSource(data.stream);
+        hls.attachMedia(video);
+    } else {
+        video.src = data.stream;
+    }
+}
+</script>
+</body>
+</html>
